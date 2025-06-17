@@ -1,12 +1,30 @@
-# React + Vite
+# Az Store
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Welcome to the **Az Store** project, your one-stop solution for seamless bus ticket payments and e-wallet top-ups, powered by Midtrans. This user-friendly interface is designed to make your transactions smooth and efficient.
 
-Currently, two official plugins are available:
+## 🗃️ Key Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### 🚌 Bus Ticket Management
 
-## Expanding the ESLint configuration
+Our bus ticket system offers a comprehensive suite of features to ensure a hassle-free booking experience:
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- Effortless Ticket Booking: Easily search, select, and book bus tickets for your desired routes. Our intuitive interface guides you through the entire process from start to finish.
+- Comprehensive City Master: A well-organized database of cities to ensure accurate route selection and booking.
+- Voucher Integration: Apply promotional vouchers during checkout to get discounts on your bus ticket purchases.
+- Detailed Ticket Reports: Access clear and concise reports of all your bus ticket transactions, making it easy to track your travel history.
+- Printable Receipts: Generate and print official receipts for your booked tickets, perfect for your records or reimbursement.
+
+### 💳 E-Wallet Top-Up
+
+Managing your e-wallet has never been easier with these powerful features:
+
+- Instant Top-Up: Conveniently add funds to your e-wallet using various payment methods, ensuring you're always ready for transactions.
+- E-Wallet Master: A centralized system for managing different e-wallet accounts and their configurations.
+- Voucher Redemption: Utilize special vouchers to get bonuses or discounts when topping up your e-wallet.
+- Comprehensive Top-Up Reports: View detailed reports of all your e-wallet top-up transactions, providing full transparency on your spending.
+- Printable Receipts: Obtain printable receipts for all your e-wallet top-ups, ensuring you have a record of every transaction.
+
+## ✨ Special Thanks
+
+<!-- Please don't remove this section 😣 -->
+A big thank you to **[ernestoyoofi](https://github.com/ernestoyoofi)** for their invaluable contributions and dedicated frontend development. he has worked hard on the frontend of this project :3

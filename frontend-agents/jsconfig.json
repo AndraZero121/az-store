@@ -17,6 +17,6 @@
         "noEmit": true,
         "skipLibCheck": true
     },
-    "include": ["src"],
+    "include": ["src", "old-script/App.jsx"],
     "exclude": ["node_modules", "dist"]
 }

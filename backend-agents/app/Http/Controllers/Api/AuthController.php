@@ -6,10 +6,14 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 
 class AuthController extends Controller
 {
+    /**
+     * Handle user login.
+     */
     public function login(Request $request)
     {
         try {
@@ -20,9 +24,7 @@ class AuthController extends Controller
                 'password' => 'required|string|min:6',
             ]);
 
-            $user = $request->name
-                ? User::where('email', $request->input('email'))->first()
-                : null;
+            $user = User::where('email', $request->input('email'))->first();
 
             if (!$user || !Hash::check($request->input('password'), $user->password)) {
                 Log::warning('Login failed', ['email' => $request->input('email')]);
@@ -30,19 +32,26 @@ class AuthController extends Controller
             }
 
             Log::info('Login successful', ['email' => $request->input('email')]);
-            return response()->json(['message' => 'Login successful']);
+            return response()->json([
+                'message' => 'Login successful',
+                'user' => $user->only(['id', 'name', 'email', 'phone', 'address', 'agent_code', 'balance', 'status', 'last_transaction']),
+                'token' => $user->createToken('auth_token')->plainTextToken
+            ]);
         } catch (\Exception $e) {
             Log::error('Login error', ['email' => $request->input('email'), 'error' => $e->getMessage()]);
             return response()->json(['message' => 'Login failed'], 500);
         }
     }
 
+    /**
+     * Handle user registration.
+     */
     public function register(Request $request)
     {
         try {
             Log::info('Registration attempt', ['email' => $request->input('email')]);
 
-            $request->validate([
+            $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:255',
                 'email' => 'required|email|unique:users,email',
                 'password' => 'required|string|min:6|confirmed',
@@ -50,6 +59,17 @@ class AuthController extends Controller
                 'address' => 'nullable|string|max:255',
                 'last_transaction' => 'nullable|date',
             ]);
+
+            if ($validator->fails()) {
+                Log::error('Registration validation error', [
+                    'email' => $request->input('email'),
+                    'errors' => $validator->errors()->toArray()
+                ]);
+                return response()->json([
+                    'message' => 'Registration failed',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
 
             $user = User::create([
                 'name' => $request->input('name'),
@@ -64,13 +84,19 @@ class AuthController extends Controller
             ]);
 
             Log::info('Registration successful', ['email' => $user->email]);
-            return response()->json(['message' => 'Registration successful'], 201);
+            return response()->json([
+                'message' => 'Registration successful',
+                'user' => $user->only(['id', 'name', 'email', 'phone', 'address', 'agent_code', 'balance', 'status', 'last_transaction'])
+            ], 201);
         } catch (\Exception $e) {
             Log::error('Registration error', ['email' => $request->input('email'), 'error' => $e->getMessage()]);
             return response()->json(['message' => 'Registration failed'], 500);
         }
     }
 
+    /**
+     * Handle user logout.
+     */
     public function logout(Request $request)
     {
         try {
@@ -86,18 +112,26 @@ class AuthController extends Controller
         }
     }
 
+    /**
+     * Get user profile.
+     */
     public function profile(Request $request)
     {
         try {
             Log::info('Profile view attempt', ['user_id' => $request->user()->id]);
 
-            return response()->json(['user' => $request->user()]);
+            return response()->json([
+                'user' => $request->user()->only(['id', 'name', 'email', 'phone', 'address', 'agent_code', 'balance', 'status', 'last_transaction'])
+            ]);
         } catch (\Exception $e) {
             Log::error('Profile view error', ['user_id' => $request->user()->id, 'error' => $e->getMessage()]);
             return response()->json(['message' => 'Profile view failed'], 500);
         }
     }
 
+    /**
+     * Update user profile.
+     */
     public function updateProfile(Request $request)
     {
         try {
@@ -106,9 +140,11 @@ class AuthController extends Controller
             $request->validate([
                 'name' => 'sometimes|required|string|max:255',
                 'email' => 'sometimes|required|email|unique:users,email,' . $request->user()->id,
+                'phone' => 'sometimes|nullable|string|max:15',
+                'address' => 'sometimes|nullable|string|max:255',
             ]);
 
-            $request->user()->update($request->only('name', 'email'));
+            $request->user()->update($request->only('name', 'email', 'phone', 'address'));
 
             Log::info('Profile update successful', ['user_id' => $request->user()->id]);
             return response()->json(['message' => 'Profile updated successfully']);
@@ -118,6 +154,9 @@ class AuthController extends Controller
         }
     }
 
+    /**
+     * Change user password.
+     */
     public function changePassword(Request $request)
     {
         try {

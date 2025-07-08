@@ -8,7 +8,9 @@ export default function Link({ href, linkoption, onClick, children, ...props }) 
     onClick={(e) => {
       e.preventDefault();
       navigate(href, linkoption);
-      onClick(e)
+      if(typeof onClick === "function") {
+        onClick(e)
+      }
     }}
   >{children}</a>
 }

@@ -1,7 +1,7 @@
 {
   "name": "frontend-agents",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.05.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -14,11 +14,13 @@
     "axios": "^1.9.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "leaflet": "^1.9.4",
     "lucide-react": "^0.515.0",
     "notistack": "^3.0.2",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-helmet": "^6.1.0",
+    "react-leaflet": "^5.0.0",
     "react-router": "^7.6.2",
     "sonner": "^2.0.5",
     "tailwind-merge": "^3.3.1",

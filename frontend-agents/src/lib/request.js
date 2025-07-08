@@ -1,25 +1,41 @@
 import axios from "axios"
+import authOperation from "../components/content/_AuthOperation"
+import { toast } from "sonner"
 
-const baseURL = "http://localhost:5515/api{path}"
+const baseURL = "http://localhost:8080/api"
 
-async function RequestAPIApp(url, { authToken, ...options } = {}) {
+async function RequestAPIApp(url, { useAuth = true, showErrorOnToast = true, ...options } = {}) {
   try {
-    const axiosRequest = axios.request({
+    const basedAxios = axios.create({
+      baseURL: baseURL
+    })
+    const getToken = localStorage.getItem(authOperation.savetokenkey)
+    const axiosRequest = await basedAxios.request({
       ...options,
       headers: {
         ...(options.headers),
-        Authorization: (!!authToken && authToken?.length > 1 && typeof authToken === "string")? `Bera ${authToken}`:undefined
+        Authorization: (!!useAuth && !!getToken && getToken?.length > 1 && typeof getToken === "string")?
+        `${authOperation.prefixToken} ${getToken}`:undefined
       },
-      url: new URL(String(url).trim()).href
+      url: url
     })
-    return axiosRequest
+    return {
+      ...axiosRequest,
+      isJson: String(axiosRequest?.headers["content-type"]||"")?.match("application/json")
+    }
   } catch(e) {
     const responses = e.response
     if(responses) {
       return {
         isError: true,
-        ...responses
+        ...responses,
+        isJson: String(responses?.headers["content-type"]||"")?.match("application/json")
       }
+    }
+    if(showErrorOnToast) {
+      toast.error("Upss, kesalahan di sisi client!",{
+        description: "Kesalahan ini terjadi pada sisi client karena internet atau logika pada operasinya"
+      })
     }
     return {
       isError: true,
@@ -29,27 +45,29 @@ async function RequestAPIApp(url, { authToken, ...options } = {}) {
   }
 }
 
-async function request() {
-  const authorizationToken = localStorage.getItem("auth")
-  return {
-    get: async (pathURL, options = {}) => {
-      return RequestAPIApp(baseURL.replace(/{path}/g, pathURL), { ...options, authToken: authorizationToken, method: "GET" })
-    },
-    post: async (pathURL, options = {}) => {
-      return RequestAPIApp(baseURL.replace(/{path}/g, pathURL), { ...options, authToken: authorizationToken, method: "POST" })
-    },
-    patch: async (pathURL, options = {}) => {
-      return RequestAPIApp(baseURL.replace(/{path}/g, pathURL), { ...options, authToken: authorizationToken, method: "PATCH" })
-    },
-    put: async (pathURL, options = {}) => {
-      return RequestAPIApp(baseURL.replace(/{path}/g, pathURL), { ...options, authToken: authorizationToken, method: "PUT" })
-    },
-    delete: async (pathURL, options = {}) => {
-      return RequestAPIApp(baseURL.replace(/{path}/g, pathURL), { ...options, authToken: authorizationToken, method: "DELETE" })
-    },
-  }
-}
+export default RequestAPIApp
 
-module.exports = {
-  request: request
-}
+// function request() {
+//   const authorizationToken = localStorage.getItem(authOperation.savetokenkey)
+//   return {
+//     get: async (pathURL, options = {}) => {
+//       return RequestAPIApp(baseURL.replace(/{path}/g, pathURL), { ...options, authToken: authorizationToken, method: "GET" })
+//     },
+//     post: async (pathURL, options = {}) => {
+//       return RequestAPIApp(baseURL.replace(/{path}/g, pathURL), { ...options, authToken: authorizationToken, method: "POST" })
+//     },
+//     patch: async (pathURL, options = {}) => {
+//       return RequestAPIApp(baseURL.replace(/{path}/g, pathURL), { ...options, authToken: authorizationToken, method: "PATCH" })
+//     },
+//     put: async (pathURL, options = {}) => {
+//       return RequestAPIApp(baseURL.replace(/{path}/g, pathURL), { ...options, authToken: authorizationToken, method: "PUT" })
+//     },
+//     delete: async (pathURL, options = {}) => {
+//       return RequestAPIApp(baseURL.replace(/{path}/g, pathURL), { ...options, authToken: authorizationToken, method: "DELETE" })
+//     },
+//   }
+// }
+
+// module.exports = {
+//   request: request
+// }
